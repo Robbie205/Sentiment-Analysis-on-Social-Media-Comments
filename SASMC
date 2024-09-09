@@ -1,0 +1,33 @@
+import pandas as pd
+from textblob import TextBlob
+
+# Sample data
+data = {
+    'comments': [
+        "I love this product!",
+        "This is the worst experience I've ever had.",
+        "It's okay, not great but not bad.",
+        "Absolutely fantastic!",
+        "I wouldn't recommend this to anyone.",
+        "Just average, nothing special."
+    ]
+}
+
+# Create DataFrame
+df = pd.DataFrame(data)
+
+# Function to determine sentiment
+def get_sentiment(comment):
+    analysis = TextBlob(comment)
+    if analysis.sentiment.polarity > 0:
+        return 'Positive'
+    elif analysis.sentiment.polarity < 0:
+        return 'Negative'
+    else:
+        return 'Neutral'
+
+# Apply sentiment analysis
+df['sentiment'] = df['comments'].apply(get_sentiment)
+
+# Display results
+print(df)
