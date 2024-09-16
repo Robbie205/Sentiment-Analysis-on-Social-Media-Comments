@@ -31,3 +31,33 @@ df['sentiment'] = df['comments'].apply(get_sentiment)
 
 # Display results
 print(df)
+
+
+
+# Lets Try to see if we can apply this real world code and make it work to our liking
+import requests
+from bs4 import BeautifulSoup
+from textblob import TextBlob
+
+# Step 1: Scrape text data from a website
+url = 'https://facebook.com'  # Replace with your target website
+
+# Fetch the content of the webpage
+response = requests.get(url)
+
+# Parse the webpage content with BeautifulSoup
+soup = BeautifulSoup(response.content, 'html.parser')
+
+# Extract text from a specific HTML tag, like all paragraph tags
+paragraphs = soup.find_all('p')
+
+# Combine all the paragraph texts into one block of text
+text_content = ' '.join([p.get_text() for p in paragraphs])
+
+# Step 2: Analyze the sentiment of the scraped text
+blob = TextBlob(text_content)
+sentiment = blob.sentiment
+
+# Output the sentiment analysis results
+print(f"Sentiment: {sentiment}")
+
