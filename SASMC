@@ -61,3 +61,57 @@ sentiment = blob.sentiment
 # Output the sentiment analysis results
 print(f"Sentiment: {sentiment}")
 
+
+# Code Addition: 16/09/2024 11:40
+# Real-time Sentiment Analysis for Social Media Comments
+
+import tweepy
+from textblob import TextBlob
+from flask import Flask, request, jsonify
+import requests
+
+app = Flask(__name__)
+
+# Twitter API credentials
+TWITTER_API_KEY = 'your_twitter_api_key'
+TWITTER_API_SECRET = 'your_twitter_api_secret'
+TWITTER_ACCESS_TOKEN = 'your_twitter_access_token'
+TWITTER_ACCESS_TOKEN_SECRET = 'your_twitter_access_token_secret'
+
+# Facebook and Instagram API credentials
+FACEBOOK_ACCESS_TOKEN = 'your_facebook_access_token'
+INSTAGRAM_ACCESS_TOKEN = 'your_instagram_access_token'
+
+# Twitter authentication
+auth = tweepy.OAuthHandler(TWITTER_API_KEY, TWITTER_API_SECRET)
+auth.set_access_token(TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_TOKEN_SECRET)
+api = tweepy.API(auth)
+
+def analyze_sentiment(text):
+    analysis = TextBlob(text)
+    return analysis.sentiment.polarity
+
+@app.route('/analyze_twitter', methods=['GET'])
+def analyze_twitter():
+    tweets = api.user_timeline(screen_name='your_twitter_handle', count=10)
+    sentiments = {tweet.text: analyze_sentiment(tweet.text) for tweet in tweets}
+    return jsonify(sentiments)
+
+@app.route('/analyze_facebook', methods=['GET'])
+def analyze_facebook():
+    url = f'https://graph.facebook.com/v12.0/me/feed?access_token={FACEBOOK_ACCESS_TOKEN}'
+    response = requests.get(url)
+    posts = response.json().get('data', [])
+    sentiments = {post['message']: analyze_sentiment(post['message']) for post in posts if 'message' in post}
+    return jsonify(sentiments)
+
+@app.route('/analyze_instagram', methods=['GET'])
+def analyze_instagram():
+    url = f'https://graph.instagram.com/me/media?fields=id,caption&access_token={INSTAGRAM_ACCESS_TOKEN}'
+    response = requests.get(url)
+    posts = response.json().get('data', [])
+    sentiments = {post['caption']: analyze_sentiment(post['caption']) for post in posts if 'caption' in post}
+    return jsonify(sentiments)
+
+if __name__ == '__main__':
+    app.run(debug=True)
