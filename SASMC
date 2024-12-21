@@ -230,3 +230,89 @@ plt.imshow(wc.recolor(color_func=image_colors),interpolation="gaussian")
 
 plt.axis('off')
 plt.show()
+
+# New Code: 21/12/2024
+# Comment strings will have to inputted manually 
+
+from textblob import TextBlob
+
+# Step 1: Define a function to classify sentiment
+def classify_sentiment(comment):
+    """
+    Classifies a given comment as Positive, Negative, or Neutral based on polarity.
+    """
+    analysis = TextBlob(comment)  # Analyze the comment's sentiment
+    if analysis.sentiment.polarity > 0:  # Positive sentiment
+        return "Positive"
+    elif analysis.sentiment.polarity < 0:  # Negative sentiment
+        return "Negative"
+    else:  # Neutral sentiment
+        return "Neutral"
+
+# Step 2: Create a list of comments to analyze
+comments = [
+    "I love this post, it’s amazing!",
+    "This is a terrible post, I don't like it.",
+    "It's okay, nothing special.",
+    "Absolutely fantastic! Highly recommend.",
+    "Not my cup of tea, but others might like it."
+]
+
+# Step 3: Analyze each comment and print the result
+for comment in comments:
+    sentiment = classify_sentiment(comment)  # Classify the comment's sentiment
+    print(f"Comment: \"{comment}\" \nSentiment: {sentiment}\n")
+
+# Code Modification: 21/12/2024
+# Code can fetch real time data from twitter
+
+import tweepy
+from textblob import TextBlob
+
+# Step 1: Set up Twitter API credentials
+API_KEY = "your_api_key"
+API_SECRET = "your_api_secret"
+ACCESS_TOKEN = "your_access_token"
+ACCESS_SECRET = "your_access_secret"
+
+# Step 2: Authenticate with Twitter
+auth = tweepy.OAuthHandler(API_KEY, API_SECRET)
+auth.set_access_token(ACCESS_TOKEN, ACCESS_SECRET)
+api = tweepy.API(auth)
+
+# Step 3: Define a function to fetch tweets
+def fetch_comments(query, count=10):
+    """
+    Fetches the latest tweets based on a search query.
+    Parameters:
+    - query: The keyword or hashtag to search for.
+    - count: Number of tweets to fetch.
+    Returns:
+    - A list of tweet texts.
+    """
+    tweets = api.search_tweets(q=query, count=count, lang="en")
+    return [tweet.text for tweet in tweets]
+
+# Step 4: Define a function to classify sentiment
+def classify_sentiment(comment):
+    """
+    Classifies a given comment as Positive, Negative, or Neutral based on polarity.
+    """
+    analysis = TextBlob(comment)  # Analyze the comment's sentiment
+    if analysis.sentiment.polarity > 0:
+        return "Positive"
+    elif analysis.sentiment.polarity < 0:
+        return "Negative"
+    else:
+        return "Neutral"
+
+# Step 5: Fetch and analyze comments
+if __name__ == "__main__":
+    # Fetch tweets containing a specific hashtag or keyword
+    query = "Python"  # Replace with your desired keyword or hashtag
+    comments = fetch_comments(query, count=5)
+    
+    # Analyze each comment
+    for comment in comments:
+        sentiment = classify_sentiment(comment)
+        print(f"Comment: \"{comment}\" \nSentiment: {sentiment}\n")
